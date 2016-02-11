@@ -7,11 +7,5 @@ public class Balancer {
     Balancer leftChild, rightChild;
     ThreadLocal<Integer> lastSlotRange;
 
-    /**
-     *  Creates a tree of N/2 levels of balancers that contain N queues where N is the number inputted.
-     */
-    public Balancer(int numQueues)
-    {
 
-    }
 }
