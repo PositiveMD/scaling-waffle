@@ -12,6 +12,7 @@ public class Balancer {
     // the left and right children of thsi balancer, which will either be balancers or Concurrent Queues
     Balancer left,right;
     SynchronousQueue Qleft, Qright;
+    int Bdepth;
 
     //TODO : Figure out what order to do the linking for the left and right child
     public Balancer(){
@@ -35,5 +36,20 @@ public class Balancer {
         	Qleft = new SynchronousQueue();
         	Qright = new SynchronousQueue();
         }
+    }
+    
+    public Balancer Get_Left()
+    {
+    	return left;
+    }
+    
+    public Balancer Get_Right()
+    {
+    	return right;
+    }
+    
+    public int get_Depth()
+    {
+    	return Bdepth;
     }
 }
