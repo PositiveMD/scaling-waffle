@@ -12,4 +12,10 @@ public class ExchangerPackage {
         this.state = state;
         this.type = type;
     }
+
+    public ExchangerPackage(State state, Type type)
+    {
+        this.state = state;
+        this.type = type;
+    }
 }
