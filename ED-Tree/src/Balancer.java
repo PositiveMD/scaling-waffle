@@ -17,7 +17,7 @@ public class Balancer {
     int Bdepth;
 
     //TODO : Figure out what order to do the linking for the left and right child
-    public Balancer(){
+    public Balancer(int depth){
         producerToggle = new ToggleBit();
         consumerToggle = new ToggleBit();
         eliminationArray = new Exchanger[ELIMINATIONARRAYSIZE];
@@ -28,13 +28,13 @@ public class Balancer {
         {
         	left = new Balancer(--depth);
         	right = new Balancer(--depth);
-        	Qleft = NULL;
-        	Qright = NULL;
+        	Qleft = null;
+        	Qright = null;
         }
         else
         {
-        	left = NULL;
-        	right = NULL;
+        	left = null;
+        	right = null;
         	Qleft = new SynchronousQueue();
         	Qright = new SynchronousQueue();
         }
