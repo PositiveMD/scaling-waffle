@@ -9,14 +9,13 @@ public class Balancer {
 
     ToggleBit producerToggle, consumerToggle;
     Exchanger[] eliminationArray;
-    Balancer leftChild, rightChild;
     ThreadLocal<Integer> lastSlotRange;
-    // the left and right children of thsi balancer, which will either be balancers or Concurrent Queues
-    Balancer left,right;
+    // the leftChild and rightChild children of thsi balancer, which will either be balancers or Concurrent Queues
+    Balancer leftChild, rightChild;
     SynchronousQueue Qleft, Qright;
     int Bdepth;
 
-    //TODO : Figure out what order to do the linking for the left and right child
+    //TODO : Figure out what order to do the linking for the leftChild and rightChild child
     public Balancer(int depth){
         producerToggle = new ToggleBit();
         consumerToggle = new ToggleBit();
@@ -26,15 +25,15 @@ public class Balancer {
         // Recursively create children, if this is not the last layer of the ED-Tree, other wise add the queues
         if(depth>1)
         {
-        	left = new Balancer(--depth);
-        	right = new Balancer(--depth);
+        	leftChild = new Balancer(--depth);
+        	rightChild = new Balancer(--depth);
         	Qleft = null;
         	Qright = null;
         }
         else
         {
-        	left = null;
-        	right = null;
+        	leftChild = null;
+        	rightChild = null;
         	Qleft = new SynchronousQueue();
         	Qright = new SynchronousQueue();
         }
@@ -42,12 +41,12 @@ public class Balancer {
     
     public Balancer Get_Left()
     {
-    	return left;
+    	return leftChild;
     }
     
     public Balancer Get_Right()
     {
-    	return right;
+    	return rightChild;
     }
     
     public int get_Depth()
