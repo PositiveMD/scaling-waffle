@@ -5,4 +5,11 @@ public class ExchangerPackage {
     Object value;
     State state;
     Type type;
+
+    public ExchangerPackage(Object value, State state, Type type)
+    {
+        this.value = value;
+        this.state = state;
+        this.type = type;
+    }
 }
