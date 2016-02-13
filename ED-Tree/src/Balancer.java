@@ -1,4 +1,4 @@
-import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * Created by Anthony on 2/2/2016.
@@ -10,9 +10,8 @@ public class Balancer {
     ToggleBit producerToggle, consumerToggle;
     Exchanger[] eliminationArray;
     ThreadLocal<Integer> lastSlotRange;
-    // the leftChild and rightChild children of thsi balancer, which will either be balancers or Concurrent Queues
     Balancer leftChild, rightChild;
-    SynchronousQueue Qleft, Qright;
+    ConcurrentLinkedQueue Qleft, Qright;
     int Bdepth;
 
     //TODO : Figure out what order to do the linking for the leftChild and rightChild child
@@ -21,9 +20,10 @@ public class Balancer {
         consumerToggle = new ToggleBit();
         eliminationArray = new Exchanger[ELIMINATIONARRAYSIZE];
         lastSlotRange = new ThreadLocal<>();
+        Bdepth = depth;
         
         // Recursively create children, if this is not the last layer of the ED-Tree, other wise add the queues
-        if(depth>1)
+        if(depth > 1)
         {
         	leftChild = new Balancer(--depth);
         	rightChild = new Balancer(--depth);
@@ -34,8 +34,8 @@ public class Balancer {
         {
         	leftChild = null;
         	rightChild = null;
-        	Qleft = new SynchronousQueue();
-        	Qright = new SynchronousQueue();
+        	Qleft = new ConcurrentLinkedQueue();
+        	Qright = new ConcurrentLinkedQueue();
         }
     }
     
