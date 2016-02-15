@@ -41,71 +41,74 @@ public class EDTree {
         return 5;
     }
 
-	public boolean push(Integer n)
+	public boolean push(Integer pushValue)
 	{
 		// create the exchanger package to be pushed
-		ExchangerPackage payload = new ExchangerPackage(n,State.WAITING,Type.PUSH);
+		ExchangerPackage pushPackage = new ExchangerPackage(pushValue,State.WAITING,Type.PUSH);
+        int currLocation = 0;
 
 		// attempt to access slots in the elimination array, spinning on a timer and 
 		// trying successively smaller ranges of the array until the range hits size 
 		// zero, at which point it toggles the bit and moves to a child balancer
 		for(root.lastSlotRange.set(Balancer.ELIMINATIONARRAYSIZE);root.lastSlotRange.get()>0;root.lastSlotRange.set(root.lastSlotRange.get()/2))
 		{
-			// pick a random slot in the slot range
-			root.slot = ThreadLocalRandom.current().nextInt(root.lastSlotRange.get());
+			// pick a random currLocation in the currLocation range
+			currLocation = ThreadLocalRandom.current().nextInt(root.lastSlotRange.get());
 
-			if(root.eliminationArray[root.slot]==null)
+            root.eliminationArray[currLocation].slot.compareAndSet(null, pushPackage);
+
+			if(root.eliminationArray[currLocation]==null)
 			{
-				// if the chosen slot is currently empty, publish the payload there
-				root.eliminationArray[root.slot].slot.set(payload);
+				// if the chosen currLocation is currently empty, publish the pushPackage there
+				root.eliminationArray[currLocation].slot.set(pushPackage);
 
 				// spin and wait for a collision
 				for(int timer = 0; timer<100;++timer)
 				{
 					// check for collisions while we wait
-					if(root.eliminationArray[root.slot]==null)
+					if(root.eliminationArray[currLocation]==null)
 					{
-						// if the slot is set back to null, then we collided with a pop
+						// if the currLocation is set back to null, then we collided with a pop
 						// and we are done here.
 						return true;
 					}
-					else if(root.eliminationArray[root.slot].slot.get().state == State.DIFFRACTED1)
+					else if(root.eliminationArray[currLocation].slot.get().state == State.DIFFRACTED1)
 					{
 						// if the state is changed to diffracted1, then we collided with
 						// another push, and we should move to the right child
-						payload = root.eliminationArray[root.slot].slot.get();
-						root.eliminationArray[root.slot].slot.set(null);
+						pushPackage = root.eliminationArray[currLocation].slot.get();
+						root.eliminationArray[currLocation].slot.set(null);
 						if(root.rightChild!=null)
 						{
-							return root.rightChild.push((Integer) payload.value);
+							return root.rightChild.push((Integer) pushPackage.value);
 						}
 						else
 						{
-							root.Qright.add((Integer) payload.value);
+							root.Qright.add((Integer) pushPackage.value);
 							return true;
 						}
 					}
 				}
 			}
-			else if(root.eliminationArray[root.slot].slot.get().type==Type.POP)
+			else if(root.eliminationArray[currLocation].slot.get().type==Type.POP)
 			{
 				// if we collide with a pop, we replace it with our push package and let
 				// pop pick it up
-				root.eliminationArray[root.slot].slot.set(payload);
+				root.eliminationArray[currLocation].slot.set(pushPackage);
 				return true;
 			}
-			else if(root.eliminationArray[root.slot].slot.get().type==Type.PUSH)
+			else if(root.eliminationArray[currLocation].slot.get().type==Type.PUSH)
 			{
-				// if we encounter another push operation at the slot, we diffract the 
+				// if we encounter another push operation at the currLocation, we diffract the
 				// two packages to opposite children, and leave the toggle alone
-				root.eliminationArray[root.slot].slot.get().state = State.DIFFRACTED1;
+				root.eliminationArray[currLocation].slot.get().state = State.DIFFRACTED1;
 				if(root.leftChild!=null)
 				{
-					return root.leftChild.push((Integer) payload.value);
+					return root.leftChild.push((Integer) pushPackage.value);
 				}
 				else
 				{
-					root.Qleft.add((Integer) payload.value);
+					root.Qleft.add((Integer) pushPackage.value);
 					return true;
 				}
 			}
@@ -116,30 +119,30 @@ public class EDTree {
 		if(root.producerToggle.toogle())
 		{
 			// send to right child
-			Integer m = (Integer) root.eliminationArray[root.slot].slot.get().value;
-			root.eliminationArray[root.slot].slot.set(null);
+			Integer m = (Integer) root.eliminationArray[currLocation].slot.get().value;
+			root.eliminationArray[currLocation].slot.set(null);
 			if(root.rightChild!=null)
 			{
 				return root.rightChild.push(m);
 			}
 			else
 			{
-				root.Qright.add((Integer) payload.value);
+				root.Qright.add((Integer) pushPackage.value);
 				return true;
 			}
 		}
 		else
 		{
 			// send to left child
-			Integer m = (Integer) root.eliminationArray[root.slot].slot.get().value;
-			root.eliminationArray[root.slot].slot.set(null);
+			Integer m = (Integer) root.eliminationArray[currLocation].slot.get().value;
+			root.eliminationArray[currLocation].slot.set(null);
 			if(root.leftChild!=null)
 			{
 				return root.leftChild.push(m);
 			}
 			else
 			{
-				root.Qleft.add((Integer) payload.value);
+				root.Qleft.add((Integer) pushPackage.value);
 				return true;
 			}
 		}
