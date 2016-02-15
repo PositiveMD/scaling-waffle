@@ -48,6 +48,24 @@ public class EDTree {
             for (root.lastSlotRange.set(Balancer.ELIMINATIONARRAYSIZE);root.lastSlotRange.get() > 0; root.lastSlotRange.set(root.lastSlotRange.get()/2))
             {
                 currLocation = ThreadLocalRandom.current().nextInt(root.lastSlotRange.get());
+
+                // Check to see if there was another package in the location that we chose
+                if(root.eliminationArray[currLocation].slot.compareAndSet(null, popPackage))
+                {
+                    for (int timer = 0; timer < 100; timer++)
+                    {
+                        // Someone collided with us
+                        if (!root.eliminationArray[currLocation].slot.get().equals(popPackage))
+                        {
+
+                        }
+                    }
+                }
+                // We collided with another package there.
+                else
+                {
+
+                }
             }
         }
 
