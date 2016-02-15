@@ -42,8 +42,8 @@ public class Balancer {
         {
         	leftChild = null;
         	rightChild = null;
-        	Qleft = new ConcurrentLinkedQueue<Integer>();
-        	Qright = new ConcurrentLinkedQueue<Integer>();
+        	Qleft = new ConcurrentLinkedQueue<>();
+        	Qright = new ConcurrentLinkedQueue<>();
         }
     }
     
