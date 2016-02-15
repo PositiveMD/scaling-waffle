@@ -14,7 +14,6 @@ public class Balancer {
     Balancer leftChild, rightChild;
     ConcurrentLinkedQueue<Integer> Qleft, Qright;
     int Bdepth;
-    int slot = 0;
 
     //TODO : Figure out what order to do the linking for the leftChild and rightChild child
     public Balancer(int depth){
@@ -61,41 +60,55 @@ public class Balancer {
     {
     	return Bdepth;
     }
-    
+
+    public Integer pop()
+    {
+		ExchangerPackage popPackage = new ExchangerPackage(State.WAITING, Type.POP);
+        int currLocation = 0;
+
+        for(lastSlotRange.set(ELIMINATIONARRAYSIZE);lastSlotRange.get()>0;lastSlotRange.set(lastSlotRange.get()/2))
+        {
+            currLocation = ThreadLocalRandom.current().nextInt(lastSlotRange.get());
+        }
+
+
+		return 5;
+    }
     public boolean push(Integer n)
     {
     	// create the exchanger package to be pushed
     	ExchangerPackage payload = new ExchangerPackage(n,State.WAITING,Type.PUSH);
+        int currLocation = 0;
     	
     	// attempt to access slots in the elimination array, spinning on a timer and 
     	// trying successively smaller ranges of the array until the range hits size 
     	// zero, at which point it toggles the bit and moves to a child balancer
     	for(lastSlotRange.set(ELIMINATIONARRAYSIZE);lastSlotRange.get()>0;lastSlotRange.set(lastSlotRange.get()/2))
     	{
-    		// pick a random slot in the slot range
-    		slot = ThreadLocalRandom.current().nextInt(lastSlotRange.get());
+    		// pick a random currLocation in the currLocation range
+    		currLocation = ThreadLocalRandom.current().nextInt(lastSlotRange.get());
     		
-    		if(eliminationArray[slot].slot.get()==null)
+    		if(eliminationArray[currLocation].slot.get()==null)
     		{
-    			// if the chosen slot is currently empty, publish the payload there
-    			eliminationArray[slot].slot.set(payload);
+    			// if the chosen currLocation is currently empty, publish the payload there
+    			eliminationArray[currLocation].slot.set(payload);
     			
     			// spin and wait for a collision
     			for(int timer = 0; timer<100;++timer)
     			{
     				// check for collisions while we wait
-    				if(eliminationArray[slot]==null)
+    				if(eliminationArray[currLocation]==null)
     				{
-    					// if the slot is set back to null, then we collided with a pop
+    					// if the currLocation is set back to null, then we collided with a pop
         				// and we are done here.
     					return true;
     				}
-    				else if(eliminationArray[slot].slot.get().state == State.DIFFRACTED1)
+    				else if(eliminationArray[currLocation].slot.get().state == State.DIFFRACTED1)
     				{
     					// if the state is changed to diffracted1, then we collided with
     					// another push, and we should move to the right child
-    					payload = eliminationArray[slot].slot.get();
-    					eliminationArray[slot].slot.set(null);
+    					payload = eliminationArray[currLocation].slot.get();
+    					eliminationArray[currLocation].slot.set(null);
     					if(rightChild!=null)
     					{
     						return rightChild.push((Integer) payload.value);
@@ -108,18 +121,18 @@ public class Balancer {
     				}
     			}
     		}
-    		else if(eliminationArray[slot].slot.get().type==Type.POP)
+    		else if(eliminationArray[currLocation].slot.get().type==Type.POP)
     		{
     			// if we collide with a pop, we replace it with our push package and let
     			// pop pick it up
-    			eliminationArray[slot].slot.set(payload);
+    			eliminationArray[currLocation].slot.set(payload);
     			return true;
     		}
-    		else if(eliminationArray[slot].slot.get().type==Type.PUSH)
+    		else if(eliminationArray[currLocation].slot.get().type==Type.PUSH)
     		{
-    			// if we encounter another push operation at the slot, we diffract the 
+    			// if we encounter another push operation at the currLocation, we diffract the
     			// two packages to opposite children, and leave the toggle alone
-    			eliminationArray[slot].slot.get().state = State.DIFFRACTED1;
+    			eliminationArray[currLocation].slot.get().state = State.DIFFRACTED1;
     			if(leftChild!=null)
     			{
     				return leftChild.push((Integer) payload.value);
@@ -137,8 +150,8 @@ public class Balancer {
     	if(producerToggle.toogle())
     	{
     		// send to right child
-    		Integer m = (Integer) eliminationArray[slot].slot.get().value;
-    		eliminationArray[slot].slot.set(null);
+    		Integer m = (Integer) eliminationArray[currLocation].slot.get().value;
+    		eliminationArray[currLocation].slot.set(null);
     		if(rightChild!=null)
     		{
     			return rightChild.push(m);
@@ -152,8 +165,8 @@ public class Balancer {
     	else
     	{
     		// send to left child
-    		Integer m = (Integer) eliminationArray[slot].slot.get().value;
-    		eliminationArray[slot].slot.set(null);
+    		Integer m = (Integer) eliminationArray[currLocation].slot.get().value;
+    		eliminationArray[currLocation].slot.set(null);
     		if(leftChild!=null)
     		{
     			return leftChild.push(m);
