@@ -38,6 +38,21 @@ public class EDTree {
     public Integer pop()
     {
         ExchangerPackage popPackage = new ExchangerPackage(State.WAITING, Type.POP);
+
+        Balancer currBalancer = root;
+        int currLocation = 0;
+
+        for (int currLevel = 0; currLevel < root.Bdepth; currLevel++)
+        {
+            // TODO: There has to be a better way to do this for loop
+            for (root.lastSlotRange.set(Balancer.ELIMINATIONARRAYSIZE);root.lastSlotRange.get() > 0; root.lastSlotRange.set(root.lastSlotRange.get()/2))
+            {
+                currLocation = ThreadLocalRandom.current().nextInt(root.lastSlotRange.get());
+            }
+        }
+
+
+
         return 5;
     }
 
