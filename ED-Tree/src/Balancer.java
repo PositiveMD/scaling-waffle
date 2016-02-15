@@ -4,7 +4,6 @@ import java.util.concurrent.ThreadLocalRandom;
 /**
  * Created by Anthony on 2/2/2016.
  */
-// Edited by Clayton Barham on 2/12/16 Note: My edtis have produced no build errors in elicpse, but have not been properly debugged yet.
 public class Balancer {
     public static final int ELIMINATIONARRAYSIZE = 10;
 
