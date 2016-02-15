@@ -1,5 +1,6 @@
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Created by Anthony on 2/2/2016.
@@ -22,6 +23,12 @@ public class Balancer {
         eliminationArray = new Exchanger[ELIMINATIONARRAYSIZE];
         lastSlotRange = new ThreadLocal<>();
         Bdepth = depth;
+
+		for (int i =0 ; i < ELIMINATIONARRAYSIZE; i++)
+		{
+			eliminationArray[i] = new Exchanger();
+			eliminationArray[i].slot = new AtomicReference<>(null);
+		}
         
         // Recursively create children, if this is not the last layer of the ED-Tree, other wise add the queues
         if(depth > 1)
@@ -68,7 +75,7 @@ public class Balancer {
     		// pick a random slot in the slot range
     		slot = ThreadLocalRandom.current().nextInt(lastSlotRange.get());
     		
-    		if(eliminationArray[slot]==null)
+    		if(eliminationArray[slot].slot.get()==null)
     		{
     			// if the chosen slot is currently empty, publish the payload there
     			eliminationArray[slot].slot.set(payload);

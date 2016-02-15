@@ -18,4 +18,9 @@ public class ExchangerPackage {
         this.state = state;
         this.type = type;
     }
+
+    public  ExchangerPackage()
+    {
+
+    }
 }

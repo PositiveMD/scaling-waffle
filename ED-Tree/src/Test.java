@@ -6,6 +6,8 @@ public class Test
   {
     EDTree tree = new EDTree(3);
 	  tree.Check_Tree();
+      tree.root.push(5);
+    System.out.println();
     // Instantiate ED-Tree
     // Spawn threads to make push and pop requests
     // track performance
