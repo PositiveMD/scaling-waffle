@@ -32,6 +32,12 @@ public class EDTree {
 		}
 		System.out.println(root.get_Depth());
 	}
+
+    public Integer pop()
+    {
+        ExchangerPackage popPackage = new ExchangerPackage(State.WAITING, Type.POP);
+        return 5;
+    }
 	
 	public int get_depth()
 	{
