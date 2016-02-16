@@ -68,6 +68,7 @@ public class Balancer {
 
         for(lastSlotRange.set(ELIMINATIONARRAYSIZE);lastSlotRange.get()>0;lastSlotRange.set(lastSlotRange.get()/2))
         {
+            eliminationArray[currLocation].slot.set(null);
             currLocation = ThreadLocalRandom.current().nextInt(lastSlotRange.get());
 
             if (eliminationArray[currLocation].slot.get()==null)
@@ -160,6 +161,7 @@ public class Balancer {
     	// zero, at which point it toggles the bit and moves to a child balancer
     	for(lastSlotRange.set(ELIMINATIONARRAYSIZE);lastSlotRange.get()>0;lastSlotRange.set(lastSlotRange.get()/2))
     	{
+            eliminationArray[currLocation].slot.set(null);
     		// pick a random currLocation in the currLocation range
     		currLocation = ThreadLocalRandom.current().nextInt(lastSlotRange.get());
     		
@@ -195,6 +197,7 @@ public class Balancer {
     					}
     				}
     			}
+
     		}
     		else if(eliminationArray[currLocation].slot.get().type==Type.POP)
     		{

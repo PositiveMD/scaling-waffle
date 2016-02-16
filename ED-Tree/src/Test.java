@@ -5,9 +5,10 @@ public class Test
   public static void main(String[] args)
   {
     EDTree tree = new EDTree(3);
-    tree.Check_Tree();
     tree.root.push(5);
-    System.out.println();
+    System.out.println(tree.root.pop());
+
+      System.out.println(tree.root.pop());
     // Instantiate ED-Tree
     // Spawn threads to make push and pop requests
     // track performance
