@@ -5,7 +5,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * Clay Barham
  */
 public class EDTree {
-  
+
   // The root of the ED Tree
 	Balancer root;
 	
@@ -14,7 +14,8 @@ public class EDTree {
 	{
 		root = new Balancer(depth);
 	}
-	
+
+    //Check the depth of the tree is correct
 	public void Check_Tree()
 	{
 		Balancer check = root;
