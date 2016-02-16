@@ -9,12 +9,18 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+/**
+ * This class uses a Reentrant lock to restrict access to the EDTree
+ * There are 3 runnables used to create the threads to test the EDTree,
+ * one that has a distribution of 50% pops 50% pushes, one with 25%/75%, and etc.
+ *
+ * 
+*/
 public class Test
 {
     public static void main(String[] args) throws InterruptedException {
         Lock myLock = new ReentrantLock();
         EDTree tree = new EDTree(3);
-        tree.root.push(5);
         int numOperations = 500000;
         int milliConversion = 1000000;
 
