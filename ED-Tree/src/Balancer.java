@@ -69,10 +69,85 @@ public class Balancer {
         for(lastSlotRange.set(ELIMINATIONARRAYSIZE);lastSlotRange.get()>0;lastSlotRange.set(lastSlotRange.get()/2))
         {
             currLocation = ThreadLocalRandom.current().nextInt(lastSlotRange.get());
+
+            if (eliminationArray[currLocation].slot.get()==null)
+            {
+                eliminationArray[currLocation].slot.set(popPackage);
+
+                for (int timer = 0; timer < 100; timer++)
+                {
+                    if (eliminationArray[currLocation] == null)
+                    {
+                        return null;
+                    }
+                    else if (eliminationArray[currLocation].slot.get().state == State.DIFFRACTED1)
+                    {
+                        eliminationArray[currLocation].slot.set(null);
+                        if (rightChild != null)
+                        {
+                            return rightChild.pop();
+                        }
+                        else
+                        {
+                            return Qright.poll();
+                        }
+                    }
+                }
+            }
+            else if(eliminationArray[currLocation].slot.get().type==Type.POP)
+            {
+                // colliding with a pop means we diffract to different children
+
+                eliminationArray[currLocation].slot.get().state = State.DIFFRACTED1;
+                if(leftChild!=null)
+                {
+                    return leftChild.pop();
+                }
+                else
+                {
+                    return Qleft.poll();
+                }
+            }
+            else if(eliminationArray[currLocation].slot.get().type==Type.PUSH)
+            {
+
+                int target =(Integer) eliminationArray[currLocation].slot.get().value;
+
+                eliminationArray[currLocation].slot.set(null);
+                return target;
+
+            }
+
+        }
+
+        if (consumerToggle.toogle())
+        {
+            eliminationArray[currLocation].slot.set(null);
+            if (rightChild != null)
+            {
+                return rightChild.pop();
+            }
+            else
+            {
+                return Qright.poll();
+            }
+        }
+        else
+        {
+            eliminationArray[currLocation].slot.set(null);
+            if (leftChild != null)
+            {
+                return rightChild.pop();
+            }
+            else
+            {
+                return Qleft.poll();
+            }
         }
 
 
-		return 5;
+
+
     }
     public boolean push(Integer n)
     {
