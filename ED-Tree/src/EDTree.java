@@ -1,9 +1,9 @@
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
- * Created by Anthony Dinh on 2/11/2016.
+ * Anthony Dinh
+ * Clay Barham
  */
- // Edited by Clayton Barham on 2/12/2016
 public class EDTree {
   
   // The root of the ED Tree

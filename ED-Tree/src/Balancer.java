@@ -3,7 +3,8 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * Created by Anthony on 2/2/2016.
+ * Anthony Dinh
+ * Clay Barham
  */
 public class Balancer {
     public static final int ELIMINATIONARRAYSIZE = 10;
