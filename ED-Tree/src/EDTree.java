@@ -8,6 +8,7 @@ public class EDTree {
 
   // The root of the ED Tree
 	Balancer root;
+    static final int TIMEOUT = 100;
 	
 	// A constructor
 	public EDTree(int depth)
@@ -15,7 +16,9 @@ public class EDTree {
 		root = new Balancer(depth);
 	}
 
-    //Check the depth of the tree is correct
+	/**
+	 * Method used to determine if the tree was instantiated correctly.
+	 */
 	public void Check_Tree()
 	{
 		Balancer check = root;
@@ -45,29 +48,33 @@ public class EDTree {
 
         for (int currLevel = 0; currLevel < root.Bdepth; currLevel++)
         {
-            // TODO: There has to be a better way to do this for loop
-            for (root.lastSlotRange.set(Balancer.ELIMINATIONARRAYSIZE);root.lastSlotRange.get() > 0; root.lastSlotRange.set(root.lastSlotRange.get()/2))
+            root.lastSlotRange.set(Balancer.ELIMINATIONARRAYSIZE);
+
+            // TODO: There has to be a better way to do this loop
+            while (root.lastSlotRange.get() > 0)
             {
                 currLocation = ThreadLocalRandom.current().nextInt(root.lastSlotRange.get());
 
                 // Check to see if there was another package in the location that we chose
-                if(root.eliminationArray[currLocation].slot.compareAndSet(null, popPackage))
+                if (root.eliminationArray[currLocation].slot.compareAndSet(null, popPackage))
                 {
-                    for (int timer = 0; timer < 100; timer++)
+                    for (int timer = 0; timer < TIMEOUT; timer++ )
                     {
-                        // Someone collided with us
+                        // There was a collision
                         if (!root.eliminationArray[currLocation].slot.get().equals(popPackage))
                         {
 
                         }
                     }
                 }
-                // We collided with another package there.
+
+                // Collided with another package at the location that we chose
                 else
                 {
 
                 }
             }
+
         }
 
 
