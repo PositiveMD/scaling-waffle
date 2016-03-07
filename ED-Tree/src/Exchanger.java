@@ -1,4 +1,4 @@
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.atomic.AtomicStampedReference;
 
 /**
  * Anthony Dinh
@@ -6,7 +6,7 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 public class Exchanger {
 
-    AtomicReference<ExchangerPackage> slot;
+    AtomicStampedReference<ExchangerPackage> slot;
 }
 
 

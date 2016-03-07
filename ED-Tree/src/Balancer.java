@@ -1,13 +1,20 @@
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.atomic.AtomicStampedReference;
 
 /**
  * Anthony Dinh
  * Clay Barham
  */
 public class Balancer {
+    public static final int EMPTY = Integer.MAX_VALUE;
+    public static final int WAITING = Integer.MAX_VALUE - 1;
+    public static final int TOGGLE = Integer.MAX_VALUE - 2;
+    public static final int DIFFRACTED0 = Integer.MAX_VALUE - 3;
+    public static final int DIFFRACTED1 = Integer.MAX_VALUE - 4;
+
     public static final int ELIMINATIONARRAYSIZE = 10;
+
 
     ToggleBit producerToggle, consumerToggle;
     Exchanger[] eliminationArray;
@@ -27,7 +34,7 @@ public class Balancer {
 		for (int i =0 ; i < ELIMINATIONARRAYSIZE; i++)
 		{
 			eliminationArray[i] = new Exchanger();
-			eliminationArray[i].slot = new AtomicReference<>(null);
+			eliminationArray[i].slot = new AtomicStampedReference<>(null, EMPTY);
 		}
         
         // Recursively create children, if this is not the last layer of the ED-Tree, other wise add the queues
