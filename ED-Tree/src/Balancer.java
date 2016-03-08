@@ -202,64 +202,6 @@ public class Balancer {
     		currLocation = ThreadLocalRandom.current().nextInt(lastSlotRange.get());
     		ExchangerPackage theirPackage = eliminationArray[currLocation].slot.get(stampHolder);
             int stamp = stampHolder[0];
-    		
-    		/*if(eliminationArray[currLocation].slot.get()==null)
-    		{
-    			// if the chosen currLocation is currently empty, publish the payload there
-    			eliminationArray[currLocation].slot.set(payload);
-    			
-    			// spin and wait for a collision
-    			for(int timer = 0; timer<100;++timer)
-    			{
-    				// check for collisions while we wait
-    				if(eliminationArray[currLocation]==null)
-    				{
-    					// if the currLocation is set back to null, then we collided with a pop
-        				// and we are done here.
-    					return true;
-    				}
-    				else if(eliminationArray[currLocation].slot.get().state == State.DIFFRACTED1)
-    				{
-    					// if the state is changed to diffracted1, then we collided with
-    					// another push, and we should move to the right child
-    					payload = eliminationArray[currLocation].slot.get();
-    					eliminationArray[currLocation].slot.set(null);
-    					if(rightChild!=null)
-    					{
-    						return rightChild.push((Integer) payload.value);
-    					}
-    					else
-    					{
-    						Qright.add((Integer) payload.value);
-    						return true;
-    					}
-    				}
-    			}
-
-    		}
-    		else if(eliminationArray[currLocation].slot.get().type==Type.POP)
-    		{
-    			// if we collide with a pop, we replace it with our push package and let
-    			// pop pick it up
-    			eliminationArray[currLocation].slot.set(payload);
-    			return true;
-    		}
-    		else if(eliminationArray[currLocation].slot.get().type==Type.PUSH)
-    		{
-    			// if we encounter another push operation at the currLocation, we diffract the
-    			// two packages to opposite children, and leave the toggle alone
-    			eliminationArray[currLocation].slot.get().state = State.DIFFRACTED1;
-    			if(leftChild!=null)
-    			{
-    				return leftChild.push((Integer) payload.value);
-    			}
-    			else
-    			{
-    				Qleft.add((Integer) payload.value);
-    				return true;
-    			}
-    		}*/
-            
             switch (stamp){
             case EMPTY :
                 if (eliminationArray[currLocation].slot.compareAndSet(theirPackage, payload, EMPTY, WAITING))
