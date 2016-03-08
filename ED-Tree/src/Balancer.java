@@ -12,6 +12,7 @@ public class Balancer {
     public static final int TOGGLE = Integer.MAX_VALUE - 2;
     public static final int DIFFRACTED0 = Integer.MAX_VALUE - 3;
     public static final int DIFFRACTED1 = Integer.MAX_VALUE - 4;
+    public static final int ELIMINATED = Integer.MAX_VALUE - 5;
 
     public static final int ELIMINATIONARRAYSIZE = 10;
 
@@ -71,67 +72,93 @@ public class Balancer {
 
     public Integer pop()
     {
-		ExchangerPackage popPackage = new ExchangerPackage(State.WAITING, Type.POP);
+		ExchangerPackage popPackage = new ExchangerPackage(null, Type.POP);
         int currLocation = 0;
+        int[] stampHolder = {EMPTY};
 
         for(lastSlotRange.set(ELIMINATIONARRAYSIZE);lastSlotRange.get()>0;lastSlotRange.set(lastSlotRange.get()/2))
         {
-            eliminationArray[currLocation].slot.set(null);
+            //eliminationArray[currLocation].slot.set(null, EMPTY);
             currLocation = ThreadLocalRandom.current().nextInt(lastSlotRange.get());
+            ExchangerPackage theirPackage = eliminationArray[currLocation].slot.get(stampHolder);
+            int stamp = stampHolder[0];
 
-            if (eliminationArray[currLocation].slot.get()==null)
-            {
-                eliminationArray[currLocation].slot.set(popPackage);
-
-                for (int timer = 0; timer < 100; timer++)
-                {
-                    if (eliminationArray[currLocation] == null)
+            switch (stamp){
+                case EMPTY :
+                    if (eliminationArray[currLocation].slot.compareAndSet(theirPackage, popPackage, EMPTY, WAITING))
                     {
-                        return null;
-                    }
-                    else if (eliminationArray[currLocation].slot.get().state == State.DIFFRACTED1)
-                    {
-                        eliminationArray[currLocation].slot.set(null);
-                        if (rightChild != null)
+                        for (int timer = 0; timer < 100; timer++)
                         {
-                            return rightChild.pop();
-                        }
-                        else
-                        {
-                            return Qright.poll();
+                            theirPackage = eliminationArray[currLocation].slot.get(stampHolder);
+                            stamp = stampHolder[0];
+
+                            switch (stamp){
+                                case WAITING:
+                                    break;
+                                case ELIMINATED:
+                                    eliminationArray[currLocation].slot.set(null, EMPTY);
+                                    return (Integer) theirPackage.value;
+                                case DIFFRACTED0:
+                                    eliminationArray[currLocation].slot.set(null, EMPTY);
+                                    if (leftChild != null)
+                                    {
+                                        return leftChild.pop();
+                                    }
+                                    else
+                                    {
+                                        return Qleft.poll();
+                                    }
+                                case DIFFRACTED1:
+                                    eliminationArray[currLocation].slot.set(null,EMPTY);
+                                    if (rightChild != null)
+                                    {
+                                        return rightChild.pop();
+                                    }
+                                    else
+                                    {
+                                        return Qright.poll();
+                                    }
+                            }
                         }
                     }
-                }
+                    break;
+                case WAITING:
+                   if (theirPackage.value == null)
+                   {
+                       if (eliminationArray[currLocation].slot.compareAndSet(theirPackage, popPackage, WAITING, DIFFRACTED0))
+                       {
+                           if (rightChild != null)
+                           {
+                               return rightChild.pop();
+                           }
+                           else
+                           {
+                               return Qright.poll();
+                           }
+                       }
+                       break;
+                   }
+                    else
+                   {
+                       if (eliminationArray[currLocation].slot.compareAndSet(theirPackage, popPackage, WAITING, ELIMINATED))
+                       {
+                           return (Integer) theirPackage.value;
+                       }
+                       break;
+                   }
+                case TOGGLE:
+                    break;
+                case DIFFRACTED0:
+                    break;
+                case DIFFRACTED1:
+                    break;
+
             }
-            else if(eliminationArray[currLocation].slot.get().type==Type.POP)
-            {
-                // colliding with a pop means we diffract to different children
-
-                eliminationArray[currLocation].slot.get().state = State.DIFFRACTED1;
-                if(leftChild!=null)
-                {
-                    return leftChild.pop();
-                }
-                else
-                {
-                    return Qleft.poll();
-                }
-            }
-            else if(eliminationArray[currLocation].slot.get().type==Type.PUSH)
-            {
-
-                int target =(Integer) eliminationArray[currLocation].slot.get().value;
-
-                eliminationArray[currLocation].slot.set(null);
-                return target;
-
-            }
-
         }
-
+        // #TODO: Set the state to TOGGLE, but not sure what to do if it fails.
         if (consumerToggle.toogle())
         {
-            eliminationArray[currLocation].slot.set(null);
+            eliminationArray[currLocation].slot.set(null, EMPTY);
             if (rightChild != null)
             {
                 return rightChild.pop();
@@ -143,7 +170,7 @@ public class Balancer {
         }
         else
         {
-            eliminationArray[currLocation].slot.set(null);
+            eliminationArray[currLocation].slot.set(null, EMPTY);
             if (leftChild != null)
             {
                 return rightChild.pop();
