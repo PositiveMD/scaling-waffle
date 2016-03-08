@@ -188,19 +188,22 @@ public class Balancer {
     public boolean push(Integer n)
     {
     	// create the exchanger package to be pushed
-    	ExchangerPackage payload = new ExchangerPackage(n,State.WAITING,Type.PUSH);
+    	ExchangerPackage payload = new ExchangerPackage(n,Type.PUSH);
         int currLocation = 0;
+        int[] stampHolder = {EMPTY};
     	
     	// attempt to access slots in the elimination array, spinning on a timer and 
     	// trying successively smaller ranges of the array until the range hits size 
     	// zero, at which point it toggles the bit and moves to a child balancer
     	for(lastSlotRange.set(ELIMINATIONARRAYSIZE);lastSlotRange.get()>0;lastSlotRange.set(lastSlotRange.get()/2))
     	{
-            eliminationArray[currLocation].slot.set(null);
+            // eliminationArray[currLocation].slot.set(null);
     		// pick a random currLocation in the currLocation range
     		currLocation = ThreadLocalRandom.current().nextInt(lastSlotRange.get());
+    		ExchangerPackage theirPackage = eliminationArray[currLocation].slot.get(stampHolder);
+            int stamp = stampHolder[0];
     		
-    		if(eliminationArray[currLocation].slot.get()==null)
+    		/*if(eliminationArray[currLocation].slot.get()==null)
     		{
     			// if the chosen currLocation is currently empty, publish the payload there
     			eliminationArray[currLocation].slot.set(payload);
@@ -255,7 +258,78 @@ public class Balancer {
     				Qleft.add((Integer) payload.value);
     				return true;
     			}
-    		}
+    		}*/
+            
+            switch (stamp){
+            case EMPTY :
+                if (eliminationArray[currLocation].slot.compareAndSet(theirPackage, payload, EMPTY, WAITING))
+                {
+                    for (int timer = 0; timer < 100; timer++)
+                    {
+                        theirPackage = eliminationArray[currLocation].slot.get(stampHolder);
+                        stamp = stampHolder[0];
+
+                        switch (stamp){
+                            case WAITING:
+                                break;
+                            case ELIMINATED:
+                                eliminationArray[currLocation].slot.set(null, EMPTY);
+                                return true;
+                            case DIFFRACTED0:
+                                eliminationArray[currLocation].slot.set(null, EMPTY);
+                                if (leftChild != null)
+                                {
+                                    return leftChild.push((Integer) payload.value);
+                                }
+                                else
+                                {
+                                    return Qleft.add((Integer) payload.value);
+                                }
+                            case DIFFRACTED1:
+                                eliminationArray[currLocation].slot.set(null,EMPTY);
+                                if (rightChild != null)
+                                {
+                                    return rightChild.push((Integer) payload.value);
+                                }
+                                else
+                                {
+                                    return Qright.add((Integer) payload.value);
+                                }
+                        }
+                    }
+                }
+                break;
+            case WAITING:
+               if (theirPackage.value != null)
+               {
+                   if (eliminationArray[currLocation].slot.compareAndSet(theirPackage, payload, WAITING, DIFFRACTED0))
+                   {
+                       if (rightChild != null)
+                       {
+                           return rightChild.push((Integer) payload.value);
+                       }
+                       else
+                       {
+                           return Qright.add((Integer) payload.value);
+                       }
+                   }
+                   break;
+               }
+                else
+               {
+                   if (eliminationArray[currLocation].slot.compareAndSet(theirPackage, payload, WAITING, ELIMINATED))
+                   {
+                       return true;
+                   }
+                   break;
+               }
+            case TOGGLE:
+                break;
+            case DIFFRACTED0:
+                break;
+            case DIFFRACTED1:
+                break;
+            } 
     	}
     	
     	// If the package exhausts the entire elimination range, toggle the bit and 
@@ -263,32 +337,28 @@ public class Balancer {
     	if(producerToggle.toogle())
     	{
     		// send to right child
-    		Integer m = (Integer) eliminationArray[currLocation].slot.get().value;
-    		eliminationArray[currLocation].slot.set(null);
-    		if(rightChild!=null)
-    		{
-    			return rightChild.push(m);
-    		}
-    		else
-    		{
-    			Qright.add((Integer) payload.value);
-				return true;
-    		}
+    		eliminationArray[currLocation].slot.set(null,EMPTY);
+            if (rightChild != null)
+            {
+                return rightChild.push((Integer) payload.value);
+            }
+            else
+            {
+                return Qright.add((Integer) payload.value);
+            }
     	}
     	else
     	{
     		// send to left child
-    		Integer m = (Integer) eliminationArray[currLocation].slot.get().value;
-    		eliminationArray[currLocation].slot.set(null);
-    		if(leftChild!=null)
-    		{
-    			return leftChild.push(m);
-    		}
-    		else
-    		{
-    			Qleft.add((Integer) payload.value);
-				return true;
-    		}
+    		eliminationArray[currLocation].slot.set(null,EMPTY);
+            if (leftChild != null)
+            {
+                return leftChild.push((Integer) payload.value);
+            }
+            else
+            {
+                return Qleft.add((Integer) payload.value);
+            }
     	}
     }
 }
