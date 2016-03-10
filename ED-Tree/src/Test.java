@@ -7,9 +7,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executor;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+//import java.util.concurrent.Executor;
+//import java.util.concurrent.locks.Lock;
+//import java.util.concurrent.locks.ReentrantLock;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -26,17 +26,19 @@ public class Test
     public static void main(String[] args) throws InterruptedException, ExecutionException {
         EDTree tree = new EDTree(3);
         int numOperations = 500000;
-        int sampleSize = 30;
+        int sampleSize = 40;
         int milliConversion = 1000000;
-        long results[] = new long[30];
+        long results[] = new long[sampleSize];
+        long throughput[] = new long[sampleSize];
         long startTime;
         long endTime;
         long duration;
-        List<Thread> threadList = new ArrayList<>();
+        //List<Thread> threadList = new ArrayList<>();
         ConcurrentLinkedQueue<Integer> controlQueue = new ConcurrentLinkedQueue<Integer>();
         ExecutorService ex;
         int n = 0;
         int mean = 0;
+        int tmean = 0;
         int dev = 0;
         List<Future<Object>> futures = new ArrayList<Future<Object>>();
 
@@ -188,25 +190,33 @@ public class Test
         	endTime = System.nanoTime();
         	duration = (endTime- startTime) / milliConversion;
         	results[i] = duration;
+        	throughput[i] = n*numOperations/results[i];
         	System.out.print(duration + " ");
+        	System.out.print("t=" + throughput[i] + ", ");
         	futures = new ArrayList<Future<Object>>();
+        	tree.root.reset();
         }
         // reinitialize mean
         mean = 0;
+        tmean = 0;
         // sum all elements of results
         for(int i=0;i<sampleSize;++i)
         {
         	mean += results[i];
+        	tmean += throughput[i];
         }
         // divide total by sample size
         mean = mean/sampleSize;
+        tmean = tmean/sampleSize;
         System.out.println();
         System.out.println(n+ " thread(s) 50 / 50 " + mean);
+        System.out.println(n+ " thread(s) 50 / 50 " + tmean);
         System.out.println();
         
         
         // initialize that list that will hold the future results
         //futures = new ArrayList<Future<Object>>();
+        //tree.root.reset();
         
         // loop enough times to obtain a statistically significant sample size, letting n threads
         // operate on the data structure, timing each trial
@@ -223,25 +233,33 @@ public class Test
         	endTime = System.nanoTime();
         	duration = (endTime- startTime) / milliConversion;
         	results[i] = duration;
+        	throughput[i] = n*numOperations/results[i];
         	System.out.print(duration + " ");
+        	System.out.print("t=" + throughput[i] + ", ");
         	futures = new ArrayList<Future<Object>>();
+        	tree.root.reset();
         }
         // reinitialize mean
         mean = 0;
+        tmean = 0;
         // sum all elements of results
         for(int i=0;i<sampleSize;++i)
         {
         	mean += results[i];
+        	tmean += throughput[i];
         }
         // divide total by sample size
         mean = mean/sampleSize;
+        tmean = tmean/sampleSize;
         System.out.println();
         System.out.println(n+ " thread(s) 25 / 75 " + mean);
+        System.out.println(n+ " thread(s) 25 / 75 " + tmean);
         System.out.println();
 
 
         // initialize that list that will hold the future results
         //futures = new ArrayList<Future<Object>>();
+        //tree.root.reset();
         
         // loop enough times to obtain a statistically significant sample size, letting n threads
         // operate on the data structure, timing each trial
@@ -258,25 +276,33 @@ public class Test
         	endTime = System.nanoTime();
         	duration = (endTime- startTime) / milliConversion;
         	results[i] = duration;
+        	throughput[i] = n*numOperations/results[i];
         	System.out.print(duration + " ");
+        	System.out.print("t=" + throughput[i] + ", ");
         	futures = new ArrayList<Future<Object>>();
+        	tree.root.reset();
         }
         // reinitialize mean
         mean = 0;
+        tmean = 0;
         // sum all elements of results
         for(int i=0;i<sampleSize;++i)
         {
         	mean += results[i];
+        	tmean += throughput[i];
         }
         // divide total by sample size
         mean = mean/sampleSize;
+        tmean = tmean/sampleSize;
         System.out.println();
         System.out.println(n+ " thread(s) 75 / 25 " + mean);
+        System.out.println(n+ " thread(s) 75 / 25 " + tmean);
         System.out.println();
         
         
         // initialize that list that will hold the future results
         //futures = new ArrayList<Future<Object>>();
+        //tree.root.reset();
         
         // loop enough times to obtain a statistically significant sample size, letting n threads
         // operate on the data structure, timing each trial
@@ -293,25 +319,33 @@ public class Test
         	endTime = System.nanoTime();
         	duration = (endTime- startTime) / milliConversion;
         	results[i] = duration;
+        	throughput[i] = n*numOperations/results[i];
         	System.out.print(duration + " ");
+        	System.out.print("t=" + throughput[i] + ", ");
         	futures = new ArrayList<Future<Object>>();
+        	tree.root.reset();
         }
         // reinitialize mean
         mean = 0;
+        tmean = 0;
         // sum all elements of results
         for(int i=0;i<sampleSize;++i)
         {
         	mean += results[i];
+        	tmean += throughput[i];
         }
         // divide total by sample size
         mean = mean/sampleSize;
+        tmean = tmean/sampleSize;
         System.out.println();
         System.out.println(n+ " thread(s) control 50 / 50 " + mean);
+        System.out.println(n+ " thread(s) control 50 / 50 " + tmean);
         System.out.println();
         
         
         // initialize that list that will hold the future results
         //futures = new ArrayList<Future<Object>>();
+        //tree.root.reset();
         
         // loop enough times to obtain a statistically significant sample size, letting n threads
         // operate on the data structure, timing each trial
@@ -328,25 +362,33 @@ public class Test
         	endTime = System.nanoTime();
         	duration = (endTime- startTime) / milliConversion;
         	results[i] = duration;
+        	throughput[i] = n*numOperations/results[i];
         	System.out.print(duration + " ");
+        	System.out.print("t=" + throughput[i] + ", ");
         	futures = new ArrayList<Future<Object>>();
+        	tree.root.reset();
         }
         // reinitialize mean
         mean = 0;
+        tmean = 0;
         // sum all elements of results
         for(int i=0;i<sampleSize;++i)
         {
         	mean += results[i];
+        	tmean += throughput[i];
         }
         // divide total by sample size
         mean = mean/sampleSize;
+        tmean = tmean/sampleSize;
         System.out.println();
         System.out.println(n+ " thread(s) control 25 / 75 " + mean);
+        System.out.println(n+ " thread(s) control 25 / 75 " + tmean);
         System.out.println();
 
 
         // initialize that list that will hold the future results
         //futures = new ArrayList<Future<Object>>();
+        //tree.root.reset();
         
         // loop enough times to obtain a statistically significant sample size, letting n threads
         // operate on the data structure, timing each trial
@@ -363,22 +405,30 @@ public class Test
         	endTime = System.nanoTime();
         	duration = (endTime- startTime) / milliConversion;
         	results[i] = duration;
+        	throughput[i] = n*numOperations/results[i];
         	System.out.print(duration + " ");
+        	System.out.print("t=" + throughput[i] + ", ");
         	futures = new ArrayList<Future<Object>>();
+        	tree.root.reset();
         }
         // reinitialize mean
         mean = 0;
+        tmean = 0;
         // sum all elements of results
         for(int i=0;i<sampleSize;++i)
         {
         	mean += results[i];
+        	tmean += throughput[i];
         }
         // divide total by sample size
         mean = mean/sampleSize;
+        tmean = tmean/sampleSize;
         System.out.println();
         System.out.println(n+ " thread(s) control 75 / 25 " + mean);
+        System.out.println(n+ " thread(s) control 75 / 25 " + tmean);
         System.out.println();
         
+        ex.shutdown();
         
         // set n equal to number of threads, and initialize the thread pool
         n = 2;
@@ -386,6 +436,7 @@ public class Test
         
         // initialize that list that will hold the future results
         //futures = new ArrayList<Future<Object>>();
+        //tree.root.reset();
         
         // loop enough times to obtain a statistically significant sample size, letting n threads
         // operate on the data structure, timing each trial
@@ -402,25 +453,33 @@ public class Test
         	endTime = System.nanoTime();
         	duration = (endTime- startTime) / milliConversion;
         	results[i] = duration;
+        	throughput[i] = n*numOperations/results[i];
         	System.out.print(duration + " ");
+        	System.out.print("t=" + throughput[i] + ", ");
         	futures = new ArrayList<Future<Object>>();
+        	tree.root.reset();
         }
         // reinitialize mean
         mean = 0;
+        tmean = 0;
         // sum all elements of results
         for(int i=0;i<sampleSize;++i)
         {
         	mean += results[i];
+        	tmean += throughput[i];
         }
         // divide total by sample size
         mean = mean/sampleSize;
+        tmean = tmean/sampleSize;
         System.out.println();
         System.out.println(n+ " thread(s) 50 / 50 " + mean);
+        System.out.println(n+ " thread(s) 50 / 50 " + tmean);
         System.out.println();
         
         
         // initialize that list that will hold the future results
         //futures = new ArrayList<Future<Object>>();
+        //tree.root.reset();
         
         // loop enough times to obtain a statistically significant sample size, letting n threads
         // operate on the data structure, timing each trial
@@ -437,25 +496,33 @@ public class Test
         	endTime = System.nanoTime();
         	duration = (endTime- startTime) / milliConversion;
         	results[i] = duration;
+        	throughput[i] = n*numOperations/results[i];
         	System.out.print(duration + " ");
+        	System.out.print("t=" + throughput[i] + ", ");
         	futures = new ArrayList<Future<Object>>();
+        	tree.root.reset();
         }
         // reinitialize mean
         mean = 0;
+        tmean = 0;
         // sum all elements of results
         for(int i=0;i<sampleSize;++i)
         {
         	mean += results[i];
+        	tmean += throughput[i];
         }
         // divide total by sample size
         mean = mean/sampleSize;
+        tmean = tmean/sampleSize;
         System.out.println();
         System.out.println(n+ " thread(s) 25 / 75 " + mean);
+        System.out.println(n+ " thread(s) 25 / 75 " + tmean);
         System.out.println();
 
 
         // initialize that list that will hold the future results
         //futures = new ArrayList<Future<Object>>();
+        //tree.root.reset();
         
         // loop enough times to obtain a statistically significant sample size, letting n threads
         // operate on the data structure, timing each trial
@@ -472,25 +539,33 @@ public class Test
         	endTime = System.nanoTime();
         	duration = (endTime- startTime) / milliConversion;
         	results[i] = duration;
+        	throughput[i] = n*numOperations/results[i];
         	System.out.print(duration + " ");
+        	System.out.print("t=" + throughput[i] + ", ");
         	futures = new ArrayList<Future<Object>>();
+        	tree.root.reset();
         }
         // reinitialize mean
         mean = 0;
+        tmean = 0;
         // sum all elements of results
         for(int i=0;i<sampleSize;++i)
         {
         	mean += results[i];
+        	tmean += throughput[i];
         }
         // divide total by sample size
         mean = mean/sampleSize;
+        tmean = tmean/sampleSize;
         System.out.println();
         System.out.println(n+ " thread(s) 75 / 25 " + mean);
+        System.out.println(n+ " thread(s) 75 / 25 " + tmean);
         System.out.println();
         
         
         // initialize that list that will hold the future results
         //futures = new ArrayList<Future<Object>>();
+        //tree.root.reset();
         
         // loop enough times to obtain a statistically significant sample size, letting n threads
         // operate on the data structure, timing each trial
@@ -507,25 +582,33 @@ public class Test
         	endTime = System.nanoTime();
         	duration = (endTime- startTime) / milliConversion;
         	results[i] = duration;
+        	throughput[i] = n*numOperations/results[i];
         	System.out.print(duration + " ");
+        	System.out.print("t=" + throughput[i] + ", ");
         	futures = new ArrayList<Future<Object>>();
+        	tree.root.reset();
         }
         // reinitialize mean
         mean = 0;
+        tmean = 0;
         // sum all elements of results
         for(int i=0;i<sampleSize;++i)
         {
         	mean += results[i];
+        	tmean += throughput[i];
         }
         // divide total by sample size
         mean = mean/sampleSize;
+        tmean = tmean/sampleSize;
         System.out.println();
         System.out.println(n+ " thread(s) control 50 / 50 " + mean);
+        System.out.println(n+ " thread(s) control 50 / 50 " + tmean);
         System.out.println();
         
         
         // initialize that list that will hold the future results
         //futures = new ArrayList<Future<Object>>();
+        //tree.root.reset();
         
         // loop enough times to obtain a statistically significant sample size, letting n threads
         // operate on the data structure, timing each trial
@@ -542,25 +625,33 @@ public class Test
         	endTime = System.nanoTime();
         	duration = (endTime- startTime) / milliConversion;
         	results[i] = duration;
+        	throughput[i] = n*numOperations/results[i];
         	System.out.print(duration + " ");
+        	System.out.print("t=" + throughput[i] + ", ");
         	futures = new ArrayList<Future<Object>>();
+        	tree.root.reset();
         }
         // reinitialize mean
         mean = 0;
+        tmean = 0;
         // sum all elements of results
         for(int i=0;i<sampleSize;++i)
         {
         	mean += results[i];
+        	tmean += throughput[i];
         }
         // divide total by sample size
         mean = mean/sampleSize;
+        tmean = tmean/sampleSize;
         System.out.println();
         System.out.println(n+ " thread(s) control 25 / 75 " + mean);
+        System.out.println(n+ " thread(s) control 25 / 75 " + tmean);
         System.out.println();
 
 
         // initialize that list that will hold the future results
         //futures = new ArrayList<Future<Object>>();
+        //tree.root.reset();
         
         // loop enough times to obtain a statistically significant sample size, letting n threads
         // operate on the data structure, timing each trial
@@ -577,21 +668,30 @@ public class Test
         	endTime = System.nanoTime();
         	duration = (endTime- startTime) / milliConversion;
         	results[i] = duration;
+        	throughput[i] = n*numOperations/results[i];
         	System.out.print(duration + " ");
+        	System.out.print("t=" + throughput[i] + ", ");
         	futures = new ArrayList<Future<Object>>();
+        	tree.root.reset();
         }
         // reinitialize mean
         mean = 0;
+        tmean = 0;
         // sum all elements of results
         for(int i=0;i<sampleSize;++i)
         {
         	mean += results[i];
+        	tmean += throughput[i];
         }
         // divide total by sample size
         mean = mean/sampleSize;
+        tmean = tmean/sampleSize;
         System.out.println();
         System.out.println(n+ " thread(s) control 75 / 25 " + mean);
+        System.out.println(n+ " thread(s) control 75 / 25 " + tmean);
         System.out.println();
+        
+        ex.shutdown();
         
         // set n equal to number of threads, and initialize the thread pool
         n = 4;
@@ -599,6 +699,7 @@ public class Test
         
         // initialize that list that will hold the future results
         //futures = new ArrayList<Future<Object>>();
+        //tree.root.reset();
         
         // loop enough times to obtain a statistically significant sample size, letting n threads
         // operate on the data structure, timing each trial
@@ -615,25 +716,33 @@ public class Test
         	endTime = System.nanoTime();
         	duration = (endTime- startTime) / milliConversion;
         	results[i] = duration;
+        	throughput[i] = n*numOperations/results[i];
         	System.out.print(duration + " ");
+        	System.out.print("t=" + throughput[i] + ", ");
         	futures = new ArrayList<Future<Object>>();
+        	tree.root.reset();
         }
         // reinitialize mean
         mean = 0;
+        tmean = 0;
         // sum all elements of results
         for(int i=0;i<sampleSize;++i)
         {
         	mean += results[i];
+        	tmean += throughput[i];
         }
         // divide total by sample size
         mean = mean/sampleSize;
+        tmean = tmean/sampleSize;
         System.out.println();
         System.out.println(n+ " thread(s) 50 / 50 " + mean);
+        System.out.println(n+ " thread(s) 50 / 50 " + tmean);
         System.out.println();
         
         
         // initialize that list that will hold the future results
         //futures = new ArrayList<Future<Object>>();
+        //tree.root.reset();
         
         // loop enough times to obtain a statistically significant sample size, letting n threads
         // operate on the data structure, timing each trial
@@ -650,25 +759,33 @@ public class Test
         	endTime = System.nanoTime();
         	duration = (endTime- startTime) / milliConversion;
         	results[i] = duration;
+        	throughput[i] = n*numOperations/results[i];
         	System.out.print(duration + " ");
+        	System.out.print("t=" + throughput[i] + ", ");
         	futures = new ArrayList<Future<Object>>();
+        	tree.root.reset();
         }
         // reinitialize mean
         mean = 0;
+        tmean = 0;
         // sum all elements of results
         for(int i=0;i<sampleSize;++i)
         {
         	mean += results[i];
+        	tmean += throughput[i];
         }
         // divide total by sample size
         mean = mean/sampleSize;
+        tmean = tmean/sampleSize;
         System.out.println();
         System.out.println(n+ " thread(s) 25 / 75 " + mean);
+        System.out.println(n+ " thread(s) 25 / 75 " + tmean);
         System.out.println();
 
 
         // initialize that list that will hold the future results
         //futures = new ArrayList<Future<Object>>();
+        //tree.root.reset();
         
         // loop enough times to obtain a statistically significant sample size, letting n threads
         // operate on the data structure, timing each trial
@@ -685,25 +802,33 @@ public class Test
         	endTime = System.nanoTime();
         	duration = (endTime- startTime) / milliConversion;
         	results[i] = duration;
+        	throughput[i] = n*numOperations/results[i];
         	System.out.print(duration + " ");
+        	System.out.print("t=" + throughput[i] + ", ");
         	futures = new ArrayList<Future<Object>>();
+        	tree.root.reset();
         }
         // reinitialize mean
         mean = 0;
+        tmean = 0;
         // sum all elements of results
         for(int i=0;i<sampleSize;++i)
         {
         	mean += results[i];
+        	tmean += throughput[i];
         }
         // divide total by sample size
         mean = mean/sampleSize;
+        tmean = tmean/sampleSize;
         System.out.println();
         System.out.println(n+ " thread(s) 75 / 25 " + mean);
+        System.out.println(n+ " thread(s) 75 / 25 " + tmean);
         System.out.println();
         
         
         // initialize that list that will hold the future results
         //futures = new ArrayList<Future<Object>>();
+        //tree.root.reset();
         
         // loop enough times to obtain a statistically significant sample size, letting n threads
         // operate on the data structure, timing each trial
@@ -720,25 +845,33 @@ public class Test
         	endTime = System.nanoTime();
         	duration = (endTime- startTime) / milliConversion;
         	results[i] = duration;
+        	throughput[i] = n*numOperations/results[i];
         	System.out.print(duration + " ");
+        	System.out.print("t=" + throughput[i] + ", ");
         	futures = new ArrayList<Future<Object>>();
+        	tree.root.reset();
         }
         // reinitialize mean
         mean = 0;
+        tmean = 0;
         // sum all elements of results
         for(int i=0;i<sampleSize;++i)
         {
         	mean += results[i];
+        	tmean += throughput[i];
         }
         // divide total by sample size
         mean = mean/sampleSize;
+        tmean = tmean/sampleSize;
         System.out.println();
         System.out.println(n+ " thread(s) control 50 / 50 " + mean);
+        System.out.println(n+ " thread(s) control 50 / 50 " + tmean);
         System.out.println();
         
         
         // initialize that list that will hold the future results
         //futures = new ArrayList<Future<Object>>();
+        //tree.root.reset();
         
         // loop enough times to obtain a statistically significant sample size, letting n threads
         // operate on the data structure, timing each trial
@@ -755,25 +888,33 @@ public class Test
         	endTime = System.nanoTime();
         	duration = (endTime- startTime) / milliConversion;
         	results[i] = duration;
+        	throughput[i] = n*numOperations/results[i];
         	System.out.print(duration + " ");
+        	System.out.print("t=" + throughput[i] + ", ");
         	futures = new ArrayList<Future<Object>>();
+        	tree.root.reset();
         }
         // reinitialize mean
         mean = 0;
+        tmean = 0;
         // sum all elements of results
         for(int i=0;i<sampleSize;++i)
         {
         	mean += results[i];
+        	tmean += throughput[i];
         }
         // divide total by sample size
         mean = mean/sampleSize;
+        tmean = tmean/sampleSize;
         System.out.println();
         System.out.println(n+ " thread(s) control 25 / 75 " + mean);
+        System.out.println(n+ " thread(s) control 25 / 75 " + tmean);
         System.out.println();
 
 
         // initialize that list that will hold the future results
         //futures = new ArrayList<Future<Object>>();
+        //tree.root.reset();
         
         // loop enough times to obtain a statistically significant sample size, letting n threads
         // operate on the data structure, timing each trial
@@ -790,21 +931,30 @@ public class Test
         	endTime = System.nanoTime();
         	duration = (endTime- startTime) / milliConversion;
         	results[i] = duration;
+        	throughput[i] = n*numOperations/results[i];
         	System.out.print(duration + " ");
+        	System.out.print("t=" + throughput[i] + ", ");
         	futures = new ArrayList<Future<Object>>();
+        	tree.root.reset();
         }
         // reinitialize mean
         mean = 0;
+        tmean = 0;
         // sum all elements of results
         for(int i=0;i<sampleSize;++i)
         {
         	mean += results[i];
+        	tmean += throughput[i];
         }
         // divide total by sample size
         mean = mean/sampleSize;
+        tmean = tmean/sampleSize;
         System.out.println();
         System.out.println(n+ " thread(s) control 75 / 25 " + mean);
+        System.out.println(n+ " thread(s) control 75 / 25 " + tmean);
         System.out.println();
+        
+        ex.shutdown();
         
         // set n equal to number of threads, and initialize the thread pool
         n = 8;
@@ -812,6 +962,7 @@ public class Test
         
         // initialize that list that will hold the future results
         //futures = new ArrayList<Future<Object>>();
+        //tree.root.reset();
         
         // loop enough times to obtain a statistically significant sample size, letting n threads
         // operate on the data structure, timing each trial
@@ -828,25 +979,33 @@ public class Test
         	endTime = System.nanoTime();
         	duration = (endTime- startTime) / milliConversion;
         	results[i] = duration;
+        	throughput[i] = n*numOperations/results[i];
         	System.out.print(duration + " ");
+        	System.out.print("t=" + throughput[i] + ", ");
         	futures = new ArrayList<Future<Object>>();
+        	tree.root.reset();
         }
         // reinitialize mean
         mean = 0;
+        tmean = 0;
         // sum all elements of results
         for(int i=0;i<sampleSize;++i)
         {
         	mean += results[i];
+        	tmean += throughput[i];
         }
         // divide total by sample size
         mean = mean/sampleSize;
+        tmean = tmean/sampleSize;
         System.out.println();
         System.out.println(n+ " thread(s) 50 / 50 " + mean);
+        System.out.println(n+ " thread(s) 50 / 50 " + tmean);
         System.out.println();
         
         
         // initialize that list that will hold the future results
         //futures = new ArrayList<Future<Object>>();
+        //tree.root.reset();
         
         // loop enough times to obtain a statistically significant sample size, letting n threads
         // operate on the data structure, timing each trial
@@ -863,25 +1022,33 @@ public class Test
         	endTime = System.nanoTime();
         	duration = (endTime- startTime) / milliConversion;
         	results[i] = duration;
+        	throughput[i] = n*numOperations/results[i];
         	System.out.print(duration + " ");
+        	System.out.print("t=" + throughput[i] + ", ");
         	futures = new ArrayList<Future<Object>>();
+        	tree.root.reset();
         }
         // reinitialize mean
         mean = 0;
+        tmean = 0;
         // sum all elements of results
         for(int i=0;i<sampleSize;++i)
         {
         	mean += results[i];
+        	tmean += throughput[i];
         }
         // divide total by sample size
         mean = mean/sampleSize;
+        tmean = tmean/sampleSize;
         System.out.println();
         System.out.println(n+ " thread(s) 25 / 75 " + mean);
+        System.out.println(n+ " thread(s) 25 / 75 " + tmean);
         System.out.println();
 
 
         // initialize that list that will hold the future results
         //futures = new ArrayList<Future<Object>>();
+        //tree.root.reset();
         
         // loop enough times to obtain a statistically significant sample size, letting n threads
         // operate on the data structure, timing each trial
@@ -898,25 +1065,33 @@ public class Test
         	endTime = System.nanoTime();
         	duration = (endTime- startTime) / milliConversion;
         	results[i] = duration;
+        	throughput[i] = n*numOperations/results[i];
         	System.out.print(duration + " ");
+        	System.out.print("t=" + throughput[i] + ", ");
         	futures = new ArrayList<Future<Object>>();
+        	tree.root.reset();
         }
         // reinitialize mean
         mean = 0;
+        tmean = 0;
         // sum all elements of results
         for(int i=0;i<sampleSize;++i)
         {
         	mean += results[i];
+        	tmean += throughput[i];
         }
         // divide total by sample size
         mean = mean/sampleSize;
+        tmean = tmean/sampleSize;
         System.out.println();
         System.out.println(n+ " thread(s) 75 / 25 " + mean);
+        System.out.println(n+ " thread(s) 75 / 25 " + tmean);
         System.out.println();
         
         
         // initialize that list that will hold the future results
         //futures = new ArrayList<Future<Object>>();
+        //tree.root.reset();
         
         // loop enough times to obtain a statistically significant sample size, letting n threads
         // operate on the data structure, timing each trial
@@ -933,25 +1108,33 @@ public class Test
         	endTime = System.nanoTime();
         	duration = (endTime- startTime) / milliConversion;
         	results[i] = duration;
+        	throughput[i] = n*numOperations/results[i];
         	System.out.print(duration + " ");
+        	System.out.print("t=" + throughput[i] + ", ");
         	futures = new ArrayList<Future<Object>>();
+        	tree.root.reset();
         }
         // reinitialize mean
         mean = 0;
+        tmean = 0;
         // sum all elements of results
         for(int i=0;i<sampleSize;++i)
         {
         	mean += results[i];
+        	tmean += throughput[i];
         }
         // divide total by sample size
         mean = mean/sampleSize;
+        tmean = tmean/sampleSize;
         System.out.println();
         System.out.println(n+ " thread(s) control 50 / 50 " + mean);
+        System.out.println(n+ " thread(s) control 50 / 50 " + tmean);
         System.out.println();
         
         
         // initialize that list that will hold the future results
         //futures = new ArrayList<Future<Object>>();
+        //tree.root.reset();
         
         // loop enough times to obtain a statistically significant sample size, letting n threads
         // operate on the data structure, timing each trial
@@ -968,25 +1151,33 @@ public class Test
         	endTime = System.nanoTime();
         	duration = (endTime- startTime) / milliConversion;
         	results[i] = duration;
+        	throughput[i] = n*numOperations/results[i];
         	System.out.print(duration + " ");
+        	System.out.print("t=" + throughput[i] + ", ");
         	futures = new ArrayList<Future<Object>>();
+        	tree.root.reset();
         }
         // reinitialize mean
         mean = 0;
+        tmean = 0;
         // sum all elements of results
         for(int i=0;i<sampleSize;++i)
         {
         	mean += results[i];
+        	tmean += throughput[i];
         }
         // divide total by sample size
         mean = mean/sampleSize;
+        tmean = tmean/sampleSize;
         System.out.println();
         System.out.println(n+ " thread(s) control 25 / 75 " + mean);
+        System.out.println(n+ " thread(s) control 25 / 75 " + tmean);
         System.out.println();
 
 
         // initialize that list that will hold the future results
         //futures = new ArrayList<Future<Object>>();
+        // tree.root.reset();
         
         // loop enough times to obtain a statistically significant sample size, letting n threads
         // operate on the data structure, timing each trial
@@ -1003,23 +1194,30 @@ public class Test
         	endTime = System.nanoTime();
         	duration = (endTime- startTime) / milliConversion;
         	results[i] = duration;
+        	throughput[i] = n*numOperations/results[i];
         	System.out.print(duration + " ");
+        	System.out.print("t=" + throughput[i] + ", ");
         	futures = new ArrayList<Future<Object>>();
+        	tree.root.reset();
         }
         // reinitialize mean
         mean = 0;
+        tmean = 0;
         // sum all elements of results
         for(int i=0;i<sampleSize;++i)
         {
         	mean += results[i];
+        	tmean += throughput[i];
         }
         // divide total by sample size
         mean = mean/sampleSize;
+        tmean = tmean/sampleSize;
         System.out.println();
         System.out.println(n+ " thread(s) control 75 / 25 " + mean);
+        System.out.println(n+ " thread(s) control 75 / 25 " + tmean);
         System.out.println();
 
-
+        ex.shutdown();
 
 
 
