@@ -303,4 +303,31 @@ public class Balancer {
             }
     	}
     }
+    
+    public void reset()
+    {
+    	if(leftChild == null)
+    	{
+    		// the left child is a queue, so replace it with a new one 
+    		// and let the garbage collector deal with the old
+    		Qleft = new ConcurrentLinkedQueue<Integer>();
+    	}
+    	else
+    	{
+    		// no queues here, pass the buck to the child balancer
+    		leftChild.reset();
+    	}
+    	
+    	if(rightChild == null)
+    	{
+    		// the left child is a queue, so replace it with a new one 
+    		// and let the garbage collector deal with the old
+    		Qright = new ConcurrentLinkedQueue<Integer>();
+    	}
+    	else
+    	{
+    		// no queues here, pass the buck to the child balancer
+    		rightChild.reset();
+    	}
+    }
 }
