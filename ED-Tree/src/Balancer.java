@@ -78,7 +78,7 @@ public class Balancer {
 
         for(lastSlotRange.set(ELIMINATIONARRAYSIZE);lastSlotRange.get()>0;lastSlotRange.set(lastSlotRange.get()/2))
         {
-            //eliminationArray[currLocation].slot.set(null, EMPTY);
+            eliminationArray[currLocation].slot.set(null, EMPTY);
             currLocation = ThreadLocalRandom.current().nextInt(lastSlotRange.get());
             ExchangerPackage theirPackage = eliminationArray[currLocation].slot.get(stampHolder);
             int stamp = stampHolder[0];
@@ -197,7 +197,7 @@ public class Balancer {
     	// zero, at which point it toggles the bit and moves to a child balancer
     	for(lastSlotRange.set(ELIMINATIONARRAYSIZE);lastSlotRange.get()>0;lastSlotRange.set(lastSlotRange.get()/2))
     	{
-            // eliminationArray[currLocation].slot.set(null);
+             eliminationArray[currLocation].slot.set(null, EMPTY);
     		// pick a random currLocation in the currLocation range
     		currLocation = ThreadLocalRandom.current().nextInt(lastSlotRange.get());
     		ExchangerPackage theirPackage = eliminationArray[currLocation].slot.get(stampHolder);
