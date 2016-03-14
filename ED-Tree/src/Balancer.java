@@ -24,7 +24,7 @@ public class Balancer {
     ConcurrentLinkedQueue<Integer> Qleft, Qright;
     int Bdepth;
 
-    //TODO : Figure out what order to do the linking for the leftChild and rightChild child
+
     public Balancer(int depth){
         producerToggle = new ToggleBit();
         consumerToggle = new ToggleBit();
@@ -155,7 +155,7 @@ public class Balancer {
 
             }
         }
-        // #TODO: Set the state to TOGGLE, but not sure what to do if it fails.
+
         if (consumerToggle.toogle())
         {
             eliminationArray[currLocation].slot.set(null, EMPTY);
